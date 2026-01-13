@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import mqtt from "mqtt";
+import "./App.css";
 
 function App() {
   const [temp, setTemp] = useState("--");
@@ -12,6 +13,7 @@ function App() {
       {
         username: import.meta.env.VITE_MQTT_USER,
         password: import.meta.env.VITE_MQTT_PASSWORD,
+        reconnectPeriod: 2000,
       }
     );
 
@@ -32,57 +34,27 @@ function App() {
   }, []);
 
   return (
-    <div style={styles.container}>
-      <h1>🌡️ Mosquito – ESP32</h1>
+    <div className="container">
+      <h2>Mosquito</h2>
+      <p>esp32</p>
 
-      <div style={styles.card}>
+      <div className="card">
         <div>
-          <p style={styles.label}>Temperatura</p>
-          <p style={styles.value}>{temp} °C</p>
+          <p className="label">Temperatura</p>
+          <p className="value">{temp} °C</p>
         </div>
 
         <div>
-          <p style={styles.label}>Umidità</p>
-          <p style={styles.value}>{hum} %</p>
+          <p className="label">Umidità</p>
+          <p className="value">{hum} %</p>
         </div>
       </div>
 
-      <p style={styles.status}>
+      <p className="status">
         MQTT: <strong>{status}</strong>
       </p>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    fontFamily: "sans-serif",
-    padding: 30,
-    maxWidth: 400,
-    margin: "auto",
-    textAlign: "center",
-  },
-  card: {
-    display: "flex",
-    justifyContent: "space-around",
-    padding: 20,
-    borderRadius: 12,
-    background: "#f4f4f4",
-    marginTop: 20,
-  },
-  label: {
-    fontSize: 14,
-    color: "#666",
-  },
-  value: {
-    fontSize: 32,
-    fontWeight: "bold",
-  },
-  status: {
-    marginTop: 20,
-    fontSize: 14,
-    color: "#333",
-  },
-};
 
 export default App;

@@ -1,0 +1,25 @@
+body {
+    display: flex;
+    justify-content: center; 
+    align-items: flex-start; 
+    height: 100vh;
+    text-align: center;
+    margin: 0 auto;
+}
+
+
+.card {
+    display: flex;
+    justify-content: space-around;
+}
+
+.card div {
+    border-radius: 10px;
+    border: 2px solid cadetblue;
+    background-color: rgb(95, 158, 160, 0.3);
+    padding: 10px;
+    width: 100px;
+    margin: 10px;
+}
+
+
