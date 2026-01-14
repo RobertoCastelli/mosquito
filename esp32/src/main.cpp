@@ -60,6 +60,11 @@ void reconnect() {
   }
 }
 
+/* Variabili per millis */
+unsigned long lastUpdate = 0;
+const unsigned long interval = 5000;
+
+
 void setup() {
   Serial.begin(115200);
 
@@ -97,12 +102,17 @@ void loop() {
   }
   client.loop();
 
+  unsigned long now = millis();
+
+  if (now - lastUpdate >= interval) {
+    lastUpdate = now;
+  
+
   float hum = dht.readHumidity();
   float temp = dht.readTemperature();
 
   if (isnan(hum) || isnan(temp)) {
     Serial.println("Errore lettura DHT");
-    delay(2000);
     return;
   }
 
@@ -126,11 +136,11 @@ void loop() {
            "{\"temp\": %.1f, \"hum\": %.1f}",
            temp, hum);
 
-  bool ok = client.publish("esp32/sensori/ambienti", payload);
+  bool ok = client.publish("esp32/sensori/ambienti", payload, true);
 
   Serial.println(payload);
   Serial.print("MQTT publish: ");
   Serial.println(ok ? "OK" : "FAIL");
 
-  delay(5000); // aggiornamento ogni 5 secondi
+  }
 }
