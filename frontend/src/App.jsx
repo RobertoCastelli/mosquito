@@ -5,7 +5,8 @@ import "./App.css";
 function App() {
   const [temp, setTemp] = useState("--");
   const [hum, setHum] = useState("--");
-  const [status, setStatus] = useState("disconnesso");
+  const [mqttStatus, setmqttStatus] = useState("disconnesso");
+  const [esp32Status, setEsp32Status] = useState("offline");
 
   useEffect(() => {
     const client = mqtt.connect(
@@ -18,17 +19,25 @@ function App() {
     );
 
     client.on("connect", () => {
-      setStatus("connesso");
+      setmqttStatus("connesso");
       client.subscribe("esp32/sensori/ambienti");
+      client.subscribe("esp32/status");
     });
 
-    client.on("message", (_, message) => {
-      const data = JSON.parse(message.toString());
-      setTemp(data.temp);
-      setHum(data.hum);
+    client.on("message", (topic, message) => {
+      if (topic === "esp32/status") {
+        setEsp32Status(message.toString());
+        return;
+      }
+
+      if (topic === "esp32/sensori/ambienti") {
+        const data = JSON.parse(message.toString());
+        setTemp(data.temp);
+        setHum(data.hum);
+      }
     });
 
-    client.on("close", () => setStatus("disconnesso"));
+    client.on("close", () => setmqttStatus("disconnesso"));
 
     return () => client.end();
   }, []);
@@ -36,7 +45,6 @@ function App() {
   return (
     <div className="container">
       <h2>Mosquito</h2>
-      <p>esp32</p>
 
       <div className="card">
         <div>
@@ -50,9 +58,10 @@ function App() {
         </div>
       </div>
 
-      <p className="status">
-        MQTT: <strong>{status}</strong>
-      </p>
+      <h4 className="status ">
+        <div>MQTT: {mqttStatus}</div>
+        <div>ESP32: {esp32Status}</div>
+      </h4>
     </div>
   );
 }

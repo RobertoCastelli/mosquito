@@ -50,8 +50,9 @@ PubSubClient client(espClient);
 void reconnect() {
   while (!client.connected()) {
     Serial.print("Connessione MQTT...");
-    if (client.connect("ESP32_DHT11", mqtt_user, mqtt_pass)) {
+    if (client.connect("ESP32_DHT11", mqtt_user, mqtt_pass, "esp32/status", 1, true, "offline")) {
       Serial.println("OK");
+      client.plublish("esp32/status", "online", true);
     } else {
       Serial.print("fallita, rc=");
       Serial.println(client.state());

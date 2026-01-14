@@ -22,4 +22,7 @@ body {
     margin: 10px;
 }
 
-
+.status{
+    display: flex;
+    justify-content: space-evenly;
+}
