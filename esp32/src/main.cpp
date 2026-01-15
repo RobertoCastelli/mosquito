@@ -1,6 +1,6 @@
 
 #include <Arduino.h>
-#include <search.h>
+#include <secret.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
@@ -46,7 +46,7 @@ void reconnect() {
 
     if (client.connect(
           "ESP32_DHT11",
-          MQTT_USER
+          MQTT_USER,
           MQTT_PASS,
           "esp32/status",
           1,
