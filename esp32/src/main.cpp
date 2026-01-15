@@ -1,5 +1,6 @@
 
 #include <Arduino.h>
+#include <search.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
@@ -11,18 +12,10 @@
 #include <DHT.h>
 
 /* =======================
-WIFI
-======================= */
-const char* ssid = "iliadbox-2C2EA5";
-const char* password = "4z2m2qf57nq6nh3xqszsk3";
-
-/* =======================
-   MQTT HiveMQ
+   MQTT SERVER/PORT
 ======================= */
 const char* mqtt_server = "ddbf357d636f42e79161fbac7afd5a74.s1.eu.hivemq.cloud";
 const int mqtt_port = 8883;
-const char* mqtt_user = "Shaco";
-const char* mqtt_pass = "Hive77!!!";
 
 /* =======================
    DHT11
@@ -50,9 +43,21 @@ PubSubClient client(espClient);
 void reconnect() {
   while (!client.connected()) {
     Serial.print("Connessione MQTT...");
-    if (client.connect("ESP32_DHT11", mqtt_user, mqtt_pass, "esp32/status", 1, true, "offline")) {
+
+    if (client.connect(
+          "ESP32_DHT11",
+          MQTT_USER
+          MQTT_PASS,
+          "esp32/status",
+          1,
+          true,
+          "offline"
+        )) {
+
       Serial.println("OK");
-      client.plublish("esp32/status", "online", true);
+      client.publish("esp32/status", "online", true);
+      Serial.println("STATUS PUBBLICATO: online");
+
     } else {
       Serial.print("fallita, rc=");
       Serial.println(client.state());
@@ -70,7 +75,7 @@ void setup() {
   Serial.begin(115200);
 
   /* WIFI */
-  WiFi.begin(ssid, password);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
   Serial.print("Connessione WiFi");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
