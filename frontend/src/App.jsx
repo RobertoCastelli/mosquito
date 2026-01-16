@@ -5,8 +5,9 @@ import "./App.css";
 function App() {
   const [temp, setTemp] = useState("--");
   const [hum, setHum] = useState("--");
+  const [lastTimeStamp, setLastTimeStamp] = useState(null);
   const [mqttStatus, setmqttStatus] = useState("disconnesso");
-  const [esp32Status, setEsp32Status] = useState("offline");
+  const [esp32Status, setEsp32Status] = useState("🔴");
 
   useEffect(() => {
     const client = mqtt.connect(
@@ -20,7 +21,7 @@ function App() {
 
     client.on("connect", () => {
       setmqttStatus("connesso");
-      client.subscribe("esp32/sensori/ambienti");
+      client.subscribe("esp32/sensori");
       client.subscribe("esp32/status");
     });
 
@@ -30,10 +31,11 @@ function App() {
         return;
       }
 
-      if (topic === "esp32/sensori/ambienti") {
+      if (topic === "esp32/sensori") {
         const data = JSON.parse(message.toString());
         setTemp(data.temp);
         setHum(data.hum);
+        setLastTimeStamp(data.now ?? null);
       }
     });
 
@@ -62,6 +64,11 @@ function App() {
         <div>MQTT: {mqttStatus}</div>
         <div>ESP32: {esp32Status}</div>
       </h4>
+
+      <p>
+        uptime:{" "}
+        {lastTimeStamp === null ? "--" : `${Math.round(lastTimeStamp / 1000)}s`}
+      </p>
     </div>
   );
 }

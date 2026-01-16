@@ -51,11 +51,11 @@ void reconnect() {
           "esp32/status",
           1,
           true,
-          "offline"
+          "🔴"
         )) {
 
       Serial.println("OK");
-      client.publish("esp32/status", "online", true);
+      client.publish("esp32/status", "🟢", true);
       Serial.println("STATUS PUBBLICATO: online");
 
     } else {
@@ -113,7 +113,6 @@ void loop() {
   if (now - lastUpdate >= interval) {
     lastUpdate = now;
   
-
   float hum = dht.readHumidity();
   float temp = dht.readTemperature();
 
@@ -137,12 +136,12 @@ void loop() {
   display.display();
 
   /* ===== MQTT JSON ===== */
-  char payload[64];
+  char payload[96];
   snprintf(payload, sizeof(payload),
-           "{\"temp\": %.1f, \"hum\": %.1f}",
-           temp, hum);
+           "{\"temp\": %.1f, \"hum\": %.1f, \"now\": %lu}",
+           temp, hum, now);
 
-  bool ok = client.publish("esp32/sensori/ambienti", payload, true);
+  bool ok = client.publish("esp32/sensori", payload, true);
 
   Serial.println(payload);
   Serial.print("MQTT publish: ");
