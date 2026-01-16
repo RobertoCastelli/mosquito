@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import mqtt from "mqtt";
 import "./App.css";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 function App() {
   const [temp, setTemp] = useState("--");
@@ -8,6 +16,7 @@ function App() {
   const [lastTimeStamp, setLastTimeStamp] = useState(null);
   const [mqttStatus, setmqttStatus] = useState("disconnesso");
   const [esp32Status, setEsp32Status] = useState("🔴");
+  const [history, setHistory] = useState([]);
 
   useEffect(() => {
     const client = mqtt.connect(
@@ -36,6 +45,10 @@ function App() {
         setTemp(data.temp);
         setHum(data.hum);
         setLastTimeStamp(data.now ?? null);
+        setHistory((prev) => [
+          ...prev.slice(-39),
+          { t: Math.round(data.now / 1000), temp: data.temp, hum: data.hum },
+        ]);
       }
     });
 
@@ -69,6 +82,19 @@ function App() {
         uptime:{" "}
         {lastTimeStamp === null ? "--" : `${Math.round(lastTimeStamp / 1000)}s`}
       </p>
+
+      <div className="chart">
+        <h4>T / H / s</h4>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={history}>
+            <XAxis dataKey="t" />
+            <YAxis domain={["auto", "auto"]} />
+            <Tooltip />
+            <Line type="monotone" dataKey="hum" stroke="#4dadf7" dot={false} />
+            <Line type="monotone" dataKey="temp" stroke="#ff6b6b" dot={false} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
